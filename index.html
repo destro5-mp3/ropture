@@ -3,6 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKRLX · Kora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 15vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .sub {
+            font-size: 1.2rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+            display: inline-block;
+        }
+
+        /* Reproductor de música estilo unttlited */
+        .music-player {
+            margin: 2rem auto;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* Ocultamos el reproductor nativo */
+        audio {
+            display: none;
+        }
+
+        /* Botón de play personalizado */
+        .play-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #333;
+            color: #fff;
+            font-size: 2.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .play-btn:hover {
+            border-color: #fff;
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .play-btn.playing {
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        /* Info de la canción */
+        .track-info {
+            margin-bottom: 1rem;
+        }
+
+        .track-name {
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .track-artist {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        /* Barra de progreso */
+        .progress-bar {
+            width: 100%;
+            height: 2px;
+            background: #222;
+            cursor: pointer;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 0.1em;
+            margin-top: 0.3rem;
+        }
+
+        /* Botón secundario */
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2.5rem;
+            border: 1px solid #333;
+            background: transparent;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border-radius: 0;
+            margin-top: 2rem;
+        }
+
+        .btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 2rem;
+            font-size: 0.7rem;
+            color: #333;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SKRLX</h1>
+        <div class="sub">Kora</div>
+        
+        <!-- Reproductor de música -->
+        <div class="music-player">
+            <!-- Audio oculto -->
+            <audio id="audioPlayer" loop>
+                <!-- Aquí va tu archivo de música -->
+                <source src="tu-musica.mp3" type="audio/mpeg">
+                <!-- También soporta otros formatos -->
+                <source src="tu-musica.ogg" type="audio/ogg">
+                Tu navegador no soporta audio HTML5.
+            </audio>
+
+            <!-- Botón de play personalizado -->
+            <button id="playBtn" class="play-btn">▶</button>
+
+            <!-- Info de la canción -->
+            <div class="track-info">
+                <div class="track-name">SKRLX - KORA</div>
+                <div class="track-artist">SKRLX</div>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-display">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <a href="#" class="btn">Explorar</a>
+    </div>
+
+    <footer>
+        SKRLX · 2026
+    </footer>
+
+    <script>
+        const audio = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const durationSpan = document.getElementById('duration');
+
+        // Función para formatear tiempo (segundos a mm:ss)
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Play/Pause
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸';
+                playBtn.classList.add('playing');
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+                playBtn.classList.remove('playing');
+            }
+        });
+
+        // Actualizar barra de progreso y tiempo
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            currentTimeSpan.textContent = formatTime(audio.currentTime);
+        });
+
+        // Cargar duración cuando esté disponible
+        audio.addEventListener('loadedmetadata', () => {
+            durationSpan.textContent = formatTime(audio.duration);
+        });
+
+        // Click en barra de progreso para saltar
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const clickPosition = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = clickPosition * audio.duration;
+        });
+
+        // Cuando termina la canción, volver al inicio y cambiar botón
+        audio.addEventListener('ended', () => {
+            playBtn.textContent = '▶';
+            playBtn.classList.remove('playing');
+            progressFill.style.width = '0%';
+            currentTimeSpan.textContent = '0:00';
+        });
+
+        // Si el audio no se puede cargar, mostrar mensaje
+        audio.addEventListener('error', () => {
+            console.log('Error cargando el audio. Asegúrate de tener archivos de música en la carpeta correcta.');
+            playBtn.disabled = true;
+            playBtn.style.opacity = '0.3';
+            document.querySelector('.track-name').textContent = 'No se encontró el audio';
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DTR5 · Ropture</title>
     <style>
         /* Reset básico */
