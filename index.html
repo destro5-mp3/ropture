@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DTR5 · Ropoture</title>
     <style>
-        /* Reset y estilos base - Inspirado en SKRLX */
+        /* Mismos estilos de SKRLX que ya tenemos */
         * {
             margin: 0;
             padding: 0;
@@ -22,17 +22,14 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            line-height: 1.6;
             padding: 2rem 1rem;
         }
 
         .container {
-            max-width: 720px; /* Un poco más ancho para el reproductor */
+            max-width: 500px;
             width: 100%;
-            margin: 0 auto;
         }
 
-        /* Título principal - Estilo SKRLX */
         h1 {
             font-size: clamp(3rem, 15vw, 5rem);
             font-weight: 800;
@@ -42,67 +39,111 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
-            line-height: 1.1;
         }
 
-        /* Subtítulo con el nombre del tema */
         .sub {
             font-size: 1.4rem;
             color: #888;
             text-transform: uppercase;
             letter-spacing: 0.3em;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             border-bottom: 1px solid #333;
             padding-bottom: 1rem;
             display: inline-block;
         }
 
-        /* Contenedor del reproductor embebido */
-        .player-wrapper {
-            width: 100%;
-            margin: 2.5rem 0;
-            border-radius: 24px; /* Coincide con el border-radius del iframe */
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .player-wrapper:hover {
-            transform: scale(1.02);
-        }
-
-        /* El iframe que te proporcionaron */
-        .player-wrapper iframe {
-            display: block;
-            width: 100%;
-            height: 344px; /* Altura fija como en el código original */
-            border: none;
+        /* REPRODUCTOR PERSONALIZADO - ESTILO UNTITLED */
+        .custom-player {
+            background: #0a0a0a;
+            border: 1px solid #222;
             border-radius: 24px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
-        /* Botón estilo SKRLX (opcional, por si quieres enlaces) */
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 2.5rem;
+        /* Portada del tema (opcional) */
+        .cover-art {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border-radius: 12px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid #333;
+        }
+
+        .cover-art span {
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        /* Botón de play gigante */
+        .play-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
             background: transparent;
+            border: 2px solid #333;
             color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            font-size: 0.9rem;
+            font-size: 2.5rem;
+            cursor: pointer;
+            margin: 1rem auto;
             transition: all 0.3s ease;
-            border-radius: 0;
-            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn:hover {
-            background: #fff;
-            color: #000;
+        .play-btn:hover {
             border-color: #fff;
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.05);
         }
 
-        /* Footer minimalista */
+        .play-btn.playing {
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        /* Barra de progreso */
+        .progress-container {
+            width: 100%;
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: #222;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 0.3rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* Audio oculto */
+        audio {
+            display: none;
+        }
+
         footer {
             margin-top: 3rem;
             font-size: 0.7rem;
@@ -113,37 +154,101 @@
 </head>
 <body>
     <div class="container">
-        <!-- Título principal - DTR5 como protagonista -->
         <h1>DTR5</h1>
         <div class="sub">Ropoture</div>
         
-        <!-- REPRODUCTOR EMBEBIDO - EL CÓDIGO QUE ME DISTE -->
-        <div class="player-wrapper">
-            <iframe 
-                style="border-radius: 24px" 
-                src="https://untitled.stream/embed/wKxwrAqiahsB" 
-                width="100%" 
-                height="344" 
-                allowFullScreen="" 
-                allow="picture-in-picture" 
-                frameborder="0" 
-                loading="lazy">
-            </iframe>
+        <!-- REPRODUCTOR LOCAL -->
+        <div class="custom-player">
+            <!-- Portada -->
+            <div class="cover-art">
+                <span>🎵</span>
+            </div>
+
+            <!-- Audio - COLOCA AQUÍ TU ARCHIVO WAV O MP3 -->
+            <audio id="audioPlayer" loop>
+                <source src="ropoture.wav" type="audio/wav">
+                <source src="ropoture.mp3" type="audio/mpeg">
+                Tu navegador no soporta audio.
+            </audio>
+
+            <!-- Botón play -->
+            <button id="playBtn" class="play-btn">▶</button>
+
+            <!-- Info tema -->
+            <div style="margin: 1rem 0; color: #888; font-size: 0.9rem;">
+                DTR5 - Ropoture
+            </div>
+
+            <!-- Barra progreso -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="time-info">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
         </div>
 
-        <!-- Botones opcionales para más opciones -->
-        <a href="#" class="btn">Compartir</a>
-        <a href="#" class="btn" style="margin-left: 1rem;">Info</a>
+        <!-- Botones opcionales -->
+        <a href="#" class="btn" style="border:1px solid #333; padding:0.8rem 2rem; color:#fff; text-decoration:none; display:inline-block; margin:0.5rem; text-transform:uppercase; letter-spacing:0.2em;">Descargar</a>
+        <a href="#" class="btn" style="border:1px solid #333; padding:0.8rem 2rem; color:#fff; text-decoration:none; display:inline-block; margin:0.5rem; text-transform:uppercase; letter-spacing:0.2em;">Compartir</a>
     </div>
 
     <footer>
         DTR5 · 2026
     </footer>
 
-    <!-- Script pequeño para manejar el título dinámico si quieres -->
     <script>
-        // Puedes cambiar el título de la pestaña del navegador
-        document.title = 'DTR5 · Ropoture';
+        const audio = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const durationSpan = document.getElementById('duration');
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸';
+                playBtn.classList.add('playing');
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+                playBtn.classList.remove('playing');
+            }
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            currentTimeSpan.textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            durationSpan.textContent = formatTime(audio.duration);
+        });
+
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const clickPosition = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = clickPosition * audio.duration;
+        });
+
+        audio.addEventListener('ended', () => {
+            playBtn.textContent = '▶';
+            playBtn.classList.remove('playing');
+            progressFill.style.width = '0%';
+            currentTimeSpan.textContent = '0:00';
+        });
     </script>
 </body>
 </html>
