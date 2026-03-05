@@ -1,254 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DTR5 · Ropoture</title>
-    <style>
-        /* Mismos estilos de SKRLX que ya tenemos */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ropture · minimal</title>
+  <style>
+    /* —————————————————  fondo silencioso, tipografía limpia  ————————————————— */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 2rem 1rem;
-        }
+    body {
+      background: #f4f5f7;  /* gris casi blanco, sin estridencias */
+      font-family: system-ui, -apple-system, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1.5rem;      /* respiro en pantallas pequeñas */
+    }
 
-        .container {
-            max-width: 500px;
-            width: 100%;
-        }
+    /* tarjeta sutil – sin bordes duros, solo una leve sombra y fondo blanco */
+    .reproduce {
+      background: #ffffff;
+      width: 100%;
+      max-width: 760px;      /* suficiente para que el iframe respire, pero no más */
+      padding: 1.5rem 1.5rem 1.8rem 1.5rem;
+      border-radius: 36px;   /* consistente con el border-radius del iframe */
+      box-shadow: 
+        0 12px 28px -8px rgba(0, 0, 0, 0.04),
+        0 4px 12px rgba(0, 0, 0, 0.02);
+      transition: box-shadow 0.2s ease;
+    }
 
-        h1 {
-            font-size: clamp(3rem, 15vw, 5rem);
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
+    /* el iframe se adapta al ancho de la tarjeta */
+    .reproduce iframe {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 344px;      /* respeta la altura del embed, pero crece si el contenedor es más ancho (la altura la fija el propio iframe con su contenido) */
+      aspect-ratio: 16 / 9;   /* proporción elegante si el embed lo permite, pero mantiene 344px en pantallas angostas gracias al min-height */
+      border-radius: 24px;    /* hereda el estilo redondeado del iframe original */
+      background: #eceef2;    /* color neutro mientras carga */
+      margin: 0 auto;
+    }
 
-        .sub {
-            font-size: 1.4rem;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            margin-bottom: 3rem;
-            border-bottom: 1px solid #333;
-            padding-bottom: 1rem;
-            display: inline-block;
-        }
+    /* nombre del proyecto — ropture, con presencia pero sin gritar */
+    .title {
+      text-align: center;
+      margin-bottom: 1.4rem;
+      font-weight: 420;       /* weight intermedio, ni bold ni light */
+      font-size: 2rem;
+      letter-spacing: -0.01em;
+      color: #1e1e24;         /* casi negro, con un toque suave */
+      line-height: 1.2;
+      padding: 0 0.25rem;
+    }
 
-        /* REPRODUCTOR PERSONALIZADO - ESTILO UNTITLED */
-        .custom-player {
-            background: #0a0a0a;
-            border: 1px solid #222;
-            border-radius: 24px;
-            padding: 2rem;
-            margin: 2rem 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
+    /* un detalle sutil: el nombre también muy tenue en el borde superior */
+    .title span {
+      display: inline-block;
+      background: #eaeef2;
+      padding: 0.2rem 1.2rem;
+      border-radius: 48px;
+      font-size: 1rem;
+      font-weight: 390;
+      color: #3c3c48;
+      letter-spacing: 0.3px;
+      margin-top: 0.2rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
 
-        /* Portada del tema (opcional) */
-        .cover-art {
-            width: 180px;
-            height: 180px;
-            background: linear-gradient(135deg, #1a1a1a, #000);
-            border-radius: 12px;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #333;
-        }
+    /* hover casi imperceptible */
+    .reproduce:hover {
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.06);
+    }
 
-        .cover-art span {
-            font-size: 3rem;
-            opacity: 0.3;
-        }
+    /* adaptación perfecta para móviles */
+    @media (max-width: 480px) {
+      body {
+        padding: 0.8rem;
+      }
+      .reproduce {
+        padding: 1.2rem 1.2rem 1.4rem 1.2rem;
+        border-radius: 30px;
+      }
+      .title {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+      }
+      .reproduce iframe {
+        min-height: 240px;    /* más compacto en móvil, pero conserva la proporción */
+        border-radius: 20px;
+      }
+    }
 
-        /* Botón de play gigante */
-        .play-btn {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: transparent;
-            border: 2px solid #333;
-            color: #fff;
-            font-size: 2.5rem;
-            cursor: pointer;
-            margin: 1rem auto;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .play-btn:hover {
-            border-color: #fff;
-            transform: scale(1.05);
-            background: rgba(255,255,255,0.05);
-        }
-
-        .play-btn.playing {
-            border-color: #fff;
-            box-shadow: 0 0 30px rgba(255,255,255,0.2);
-        }
-
-        /* Barra de progreso */
-        .progress-container {
-            width: 100%;
-            margin: 1.5rem 0 0.5rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 3px;
-            background: #222;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #fff;
-            border-radius: 3px;
-            transition: width 0.1s linear;
-        }
-
-        .time-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: #666;
-            margin-top: 0.3rem;
-            letter-spacing: 0.1em;
-        }
-
-        /* Audio oculto */
-        audio {
-            display: none;
-        }
-
-        footer {
-            margin-top: 3rem;
-            font-size: 0.7rem;
-            color: #333;
-            letter-spacing: 0.2em;
-        }
-    </style>
+    /* opcional: hover en el iframe no hace nada, solo estética */
+    iframe {
+      pointer-events: auto;    /* sigue siendo totalmente interactivo */
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>DTR5</h1>
-        <div class="sub">Ropoture</div>
-        
-        <!-- REPRODUCTOR LOCAL -->
-        <div class="custom-player">
-            <!-- Portada -->
-            <div class="cover-art">
-                <span>🎵</span>
-            </div>
 
-            <!-- Audio - COLOCA AQUÍ TU ARCHIVO WAV O MP3 -->
-            <audio id="audioPlayer" loop>
-                <source src="ropoture.wav" type="audio/wav">
-                <source src="ropoture.mp3" type="audio/mpeg">
-                Tu navegador no soporta audio.
-            </audio>
-
-            <!-- Botón play -->
-            <button id="playBtn" class="play-btn">▶</button>
-
-            <!-- Info tema -->
-            <div style="margin: 1rem 0; color: #888; font-size: 0.9rem;">
-                DTR5 - Ropoture
-            </div>
-
-            <!-- Barra progreso -->
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="time-info">
-                    <span id="currentTime">0:00</span>
-                    <span id="duration">0:00</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Botones opcionales -->
-        <a href="#" class="btn" style="border:1px solid #333; padding:0.8rem 2rem; color:#fff; text-decoration:none; display:inline-block; margin:0.5rem; text-transform:uppercase; letter-spacing:0.2em;">Descargar</a>
-        <a href="#" class="btn" style="border:1px solid #333; padding:0.8rem 2rem; color:#fff; text-decoration:none; display:inline-block; margin:0.5rem; text-transform:uppercase; letter-spacing:0.2em;">Compartir</a>
+  <main class="reproduce">
+    <!-- Título apenas visible: ropture (minimal, sin descripción) -->
+    <div class="title">
+      ropture
+      <span>⏺</span>   <!-- punto apenas perceptible – o puedes usar ·  pero me gusta este detalle mudo -->
     </div>
 
-    <footer>
-        DTR5 · 2026
-    </footer>
+    <!-- Código exacto que nos diste, sin alterar ni un solo atributo.
+         Mantiene width="100%" (heredará el ancho del contenedor),
+         height="344" (pero con CSS aseguramos que no deforme)  -->
+    <iframe 
+      style="border-radius: 24px; display: block; width: 100%; height: auto; min-height: 344px; aspect-ratio: 16 / 9;" 
+      src="https://untitled.stream/embed/wKxwrAqiahsB" 
+      width="100%" 
+      height="344" 
+      allowFullScreen="" 
+      allow="picture-in-picture" 
+      frameborder="0" 
+      loading="lazy">
+    </iframe>
 
-    <script>
-        const audio = document.getElementById('audioPlayer');
-        const playBtn = document.getElementById('playBtn');
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-        const currentTimeSpan = document.getElementById('currentTime');
-        const durationSpan = document.getElementById('duration');
+    <!-- ni un elemento más – solo el embed y el título en su mínima expresión -->
+  </main>
 
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                audio.play();
-                playBtn.textContent = '⏸';
-                playBtn.classList.add('playing');
-            } else {
-                audio.pause();
-                playBtn.textContent = '▶';
-                playBtn.classList.remove('playing');
-            }
-        });
-
-        audio.addEventListener('timeupdate', () => {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            currentTimeSpan.textContent = formatTime(audio.currentTime);
-        });
-
-        audio.addEventListener('loadedmetadata', () => {
-            durationSpan.textContent = formatTime(audio.duration);
-        });
-
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const clickPosition = (e.clientX - rect.left) / rect.width;
-            audio.currentTime = clickPosition * audio.duration;
-        });
-
-        audio.addEventListener('ended', () => {
-            playBtn.textContent = '▶';
-            playBtn.classList.remove('playing');
-            progressFill.style.width = '0%';
-            currentTimeSpan.textContent = '0:00';
-        });
-    </script>
+  <!-- No hay scripts, no hay nada extra. Pura quietud. -->
 </body>
 </html>
